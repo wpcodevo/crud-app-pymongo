@@ -8,7 +8,7 @@ class NoteBaseSchema(BaseModel):
     id: str | None = None
     title: str
     content: str
-    category: str | None = None
+    category: str = ""
     published: bool = False
     createdAt: datetime | None = None
     updatedAt: datetime | None = None
@@ -31,6 +31,11 @@ class UpdateNoteSchema(BaseModel):
         allow_population_by_field_name = True
         arbitrary_types_allowed = True
         json_encoders = {ObjectId: str}
+
+
+class NoteResponse(BaseModel):
+    status: str
+    note: NoteBaseSchema
 
 
 class ListNoteResponse(BaseModel):

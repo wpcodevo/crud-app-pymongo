@@ -3,13 +3,13 @@ from fastapi import HTTPException, status, APIRouter, Response
 from pymongo.collection import ReturnDocument
 from app import schemas
 from app.database import Note
-from app.noteSerializers import noteEntity, noteListEntity
+from app.note_serializers import noteEntity, noteListEntity
 from bson.objectid import ObjectId
 
 router = APIRouter()
 
 
-@router.get('/')
+@router.get('/', response_model=schemas.ListNoteResponse)
 def get_notes(limit: int = 10, page: int = 1, search: str = ''):
     skip = (page - 1) * limit
     pipeline = [
@@ -24,12 +24,12 @@ def get_notes(limit: int = 10, page: int = 1, search: str = ''):
     return {'status': 'success', 'results': len(notes), 'notes': notes}
 
 
-@router.post('/', status_code=status.HTTP_201_CREATED)
+@router.post('/', status_code=status.HTTP_201_CREATED, response_model=schemas.NoteResponse)
 def create_note(payload: schemas.NoteBaseSchema):
     payload.createdAt = datetime.utcnow()
     payload.updatedAt = payload.createdAt
     try:
-        result = Note.insert_one(payload.dict())
+        result = Note.insert_one(payload.dict(exclude_none=True))
         new_note = Note.find_one({'_id': result.inserted_id})
         return {"status": "success", "note": noteEntity(new_note)}
     except:
@@ -37,7 +37,7 @@ def create_note(payload: schemas.NoteBaseSchema):
                             detail=f"Note with title: {payload.title} already exists")
 
 
-@router.patch('/{noteId}')
+@router.patch('/{noteId}', response_model=schemas.NoteResponse)
 def update_note(noteId: str, payload: schemas.UpdateNoteSchema):
     if not ObjectId.is_valid(noteId):
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
@@ -50,7 +50,7 @@ def update_note(noteId: str, payload: schemas.UpdateNoteSchema):
     return {"status": "success", "note": noteEntity(updated_note)}
 
 
-@router.get('/{noteId}')
+@router.get('/{noteId}', response_model=schemas.NoteResponse)
 def get_note(noteId: str):
     if not ObjectId.is_valid(noteId):
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,

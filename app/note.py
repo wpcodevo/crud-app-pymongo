@@ -13,7 +13,7 @@ router = APIRouter()
 def get_notes(limit: int = 10, page: int = 1, search: str = ''):
     skip = (page - 1) * limit
     pipeline = [
-        {'$match': {}},
+        {'$match': {'title': {'$regex': search, '$options': 'i'}}},
         {
             '$skip': skip
         }, {

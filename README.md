@@ -16,11 +16,11 @@ In this article, you'll learn how to build a CRUD application with FastAPI, PyMo
 - Create the Request Validation Schemas
 - Create Database Serializers
 - Create the Path Operation Functions
-    - Retrieve all Records
-    - Create Record
-    - Update a Record
-    - Get a Record
-    - Delete a Record
+    - Retrieve all Documents
+    - Create a Document
+    - Update a Document
+    - Get a Document
+    - Delete a Document
     - Complete Path Operation Functions
 - Register the Router in the FastAPI App
 
